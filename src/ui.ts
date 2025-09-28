@@ -22,3 +22,24 @@ export function updateLivesUI(state: GameState) {
   }
   state.livesText.text = `Lives: ${Math.max(state.lives, 0)}`;
 }
+
+export function ensureProgressUI(k: KAPLAYCtx, state: GameState, total: number) {
+  if (!state.progressText) {
+    state.progressText = k.add([
+      k.pos(k.width() - 16, 16),
+      k.anchor("topright"),
+      k.fixed(),
+      k.text("", { size: 18 }),
+      k.color(255, 255, 255),
+    ]) as GameObj;
+  }
+
+  updateProgressUI(state, total);
+}
+
+export function updateProgressUI(state: GameState, total: number) {
+  if (!state.progressText) {
+    return;
+  }
+  state.progressText.text = `Stage ${state.currentSection + 1} / ${total}`;
+}

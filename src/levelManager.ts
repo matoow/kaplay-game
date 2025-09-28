@@ -1,6 +1,8 @@
 import type { GameObj, KAPLAYCtx } from "kaplay";
 
 import {
+  BOOST_COLOR,
+  DEFAULT_BOOST_FORCE,
   FINISH_COLOR,
   INITIAL_LIVES,
   SCREEN_EDGE_OFFSET,
@@ -10,7 +12,12 @@ import {
 } from "./constants";
 import { sections } from "./sections";
 import type { GameState } from "./state";
-import { ensureLivesUI, updateLivesUI } from "./ui";
+import {
+  ensureLivesUI,
+  ensureProgressUI,
+  updateLivesUI,
+  updateProgressUI,
+} from "./ui";
 
 export type LoadSectionOpts = {
   entry?: "left" | "right";
@@ -75,6 +82,22 @@ export function createLevelManager(
       state.sectionObjects.push(trapObj);
     });
 
+    section.boostPads?.forEach((boost) => {
+      const boostObj = k.add([
+        "boost",
+        k.pos(...boost.pos),
+        k.rect(...boost.size),
+        k.color(...(boost.color ?? BOOST_COLOR)),
+        k.area(),
+        k.body({ isStatic: true }),
+        k.anchor("topleft"),
+        {
+          boostForce: boost.force ?? DEFAULT_BOOST_FORCE,
+        },
+      ]) as GameObj<{ boostForce: number }>;
+      state.sectionObjects.push(boostObj);
+    });
+
     if (clampedIndex === 0) {
       const startPad = k.add([
         k.pos(SCREEN_EDGE_OFFSET - 20, section.ground.y - 6),
@@ -114,6 +137,7 @@ export function createLevelManager(
     }
 
     ensureLivesUI(k, state);
+    ensureProgressUI(k, state, sections.length);
 
     const spawnX = (() => {
       if (opts.entry === "left") {
@@ -173,6 +197,7 @@ export function createLevelManager(
       k.color(255, 80, 80),
     ]) as GameObj;
     updateLivesUI(state);
+    updateProgressUI(state, sections.length);
   }
 
   function respawnToStart() {
@@ -190,6 +215,7 @@ export function createLevelManager(
     }
 
     updateLivesUI(state);
+    updateProgressUI(state, sections.length);
     loadSection(0, { entry: "left" });
   }
 
@@ -202,6 +228,7 @@ export function createLevelManager(
       state.finishBanner = null;
     }
     updateLivesUI(state);
+    updateProgressUI(state, sections.length);
     loadSection(0, { entry: "left" });
   }
 

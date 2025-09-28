@@ -10,6 +10,7 @@ export type GameState = {
   lives: number;
   livesText: GameObj | null;
   isRespawning: boolean;
+  progressText: GameObj | null;
 };
 
 export function createInitialState(): GameState {
@@ -21,5 +22,6 @@ export function createInitialState(): GameState {
     lives: INITIAL_LIVES,
     livesText: null,
     isRespawning: false,
+    progressText: null,
   };
 }

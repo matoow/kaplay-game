@@ -2,6 +2,7 @@ import kaplay, { type GameObj } from "kaplay";
 // import "kaplay/global"; // uncomment if you want to use without the k. prefix
 
 import {
+  DEFAULT_BOOST_FORCE,
   FALL_RESET_MULTIPLIER,
   SCREEN_EDGE_OFFSET,
   SPAWN_AIR_OFFSET,
@@ -52,6 +53,12 @@ pacman.onCollide("trap", () => {
 
 pacman.onCollide("finish", () => {
   handleFinish();
+});
+
+pacman.onCollide("boost", (boostObj) => {
+  const force = (boostObj as GameObj<{ boostForce?: number }>).boostForce ?? DEFAULT_BOOST_FORCE;
+  pacman.jump(force);
+  pacman.angle = -20;
 });
 
 k.onUpdate(() => {
